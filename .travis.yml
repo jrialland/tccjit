@@ -8,6 +8,7 @@ addons:
       - cmake
 
 script:
+  - git pull --recurse-submodules
   - mkdir -p build && cd build
   - cmake ..
   - cmake --build .
