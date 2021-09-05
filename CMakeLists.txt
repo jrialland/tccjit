@@ -10,9 +10,6 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 
 find_package(Threads REQUIRED)
 
-## Catch2 ##
-find_package(Catch2 3 REQUIRED)
-
 ## Boost ##
 set(Boost_USE_STATIC_LIBS OFF) 
 set(Boost_USE_MULTITHREADED ON)  
@@ -21,6 +18,7 @@ find_package(Boost REQUIRED COMPONENTS regex)
 
 ## tinycc ##
 execute_process(COMMAND ./configure WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/deps/tinycc)
+execute_process(COMMAND make WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/deps/tinycc)
 
 ## source files ##
 file(GLOB_RECURSE TCCJIT_SRC ${CMAKE_SOURCE_DIR}/src/*.cpp)
@@ -32,6 +30,5 @@ target_link_libraries(tccjit ${CMAKE_DL_LIBS} Threads::Threads)
 
 file(GLOB_RECURSE TESTS_SRC ${CMAKE_SOURCE_DIR}/tests/*.cpp)
 add_executable(tests ${TESTS_SRC})
-target_include_directories(tests PRIVATE ${CMAKE_SOURCE_DIR}/src)
-
-target_link_libraries(tests Catch2::Catch2WithMain tccjit)
+target_include_directories(tests PRIVATE ${CMAKE_SOURCE_DIR}/deps ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(tests tccjit)
