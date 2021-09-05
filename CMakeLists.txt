@@ -18,7 +18,7 @@ file(GLOB_RECURSE TCCJIT_SRC ${CMAKE_SOURCE_DIR}/src/*.cpp)
 
 ## generate a shared libary ##
 add_library(tccjit SHARED ${TCCJIT_SRC} ${CMAKE_SOURCE_DIR}/deps/tinycc/libtcc.c)
-target_include_directories(tccjit PRIVATE ${CMAKE_SOURCE_DIR}/deps/tinycc)
+target_include_directories(tccjit PUBLIC ${CMAKE_SOURCE_DIR}/deps/tinycc)
 target_link_libraries(tccjit ${CMAKE_DL_LIBS} Threads::Threads)
 
 file(GLOB_RECURSE TESTS_SRC ${CMAKE_SOURCE_DIR}/tests/*.cpp)
