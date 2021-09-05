@@ -170,8 +170,8 @@ void* jit::Module::get_symbol(const std::string &symbol) {
 
 ////////////////////////////////////////////////////////////////////////////////
 void jit::Module::add_symbol(const std::string& name, void *sym) {
-	if(!linked) {
-		link();
+	if(linked) {
+		throw std::runtime_error("module already linked");
 	}
 	tcc_add_symbol(tcc.get(), name.c_str(), sym);
 }
