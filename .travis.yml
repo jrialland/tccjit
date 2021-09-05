@@ -9,6 +9,7 @@ addons:
     - libboost-regex-dev
 
 script:
+  - git clone https://github.com/catchorg/Catch2 && mkdir catch2_build -p && cd catch2_build && cmake ../Catch2/ && make install && cd ..
   - mkdir -p build && cd build
   - cmake ..
   - cmake --build .
