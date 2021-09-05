@@ -8,7 +8,6 @@ addons:
       - cmake
 
 script:
-  - git submodule foreach git pull
   - mkdir -p build && cd build
   - cmake ..
   - cmake --build .
