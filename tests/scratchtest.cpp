@@ -1,6 +1,6 @@
 #include <catch2/catch_test_macros.hpp>
 
-#include "jit.hpp"
+#include "tccjit.hpp"
 
 TEST_CASE("Compile and call", "[jit]") {
 

@@ -1,13 +1,10 @@
-#include "jit.hpp"
-
-#include <libtcc.h>
-
-#include <libgen.h>
+#include "tccjit.hpp"
 
 #include <cstring>
 #include <stdexcept>
 
 #ifdef __linux 
+#include <libgen.h>
 #include <link.h>
 extern "C" {
 	static int dl_iterate_cb(struct dl_phdr_info *info, size_t size, void *data) {
