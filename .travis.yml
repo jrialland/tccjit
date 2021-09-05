@@ -6,6 +6,7 @@ addons:
   apt:
     packages:
       - cmake
+      - libtcc-dev
 
 script:
   - mkdir -p build && cd build
