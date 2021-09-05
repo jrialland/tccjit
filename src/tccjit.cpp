@@ -2,7 +2,9 @@
 
 #include <cstring>
 #include <cstdio>
+#include <vector>
 #include <stdexcept>
+#include <sstream>
 #include <fstream>
 using namespace std;
 
@@ -72,7 +74,6 @@ static std::string check_libtcc1a() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-
 #ifdef __linux 
 #include <libgen.h>
 #include <link.h>
@@ -88,23 +89,33 @@ extern "C" {
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////
-jit::Module::Module(const std::string &code) {
+void addErrorMsg(void *v, const char *msg) {
+	((std::vector<string>*)v)->push_back(msg);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+jit::Module::Module(const std::string &code, bool autolink) : linked(false) {
 	
 	// create tcc context
 	tcc = std::shared_ptr<TCCState>(tcc_new(), tcc_delete);
+
 	if(tcc.get() == nullptr) {
 		throw std::runtime_error("tcc context initialization failed");
 		return;
 	}
 
+	std::vector<string> errorMsgs;
+	tcc_set_error_func(tcc.get(), &errorMsgs, addErrorMsg);
+
 	// look for a libtcc1.a file in various locations
 	std::string lib_path = check_libtcc1a();
+
 	// add it to the path (required)
 	tcc_set_lib_path(tcc.get(), lib_path.c_str());
 
 	// in-memory generation
 	tcc_set_output_type(tcc.get(), TCC_OUTPUT_MEMORY);
-
+	
 #ifdef __linux
 	// add needed library (c runtime, etc)
 	dl_iterate_phdr(dl_iterate_cb, tcc.get());
@@ -112,27 +123,61 @@ jit::Module::Module(const std::string &code) {
 
 	// compile input string
 	if(tcc_compile_string(tcc.get(), code.c_str()) != 0) {
-		throw std::runtime_error("compilation failed");
+		std::ostringstream ss;
+		ss << "compilation failed : \n";
+		for(auto s : errorMsgs) {
+			ss << s << endl;
+		}
+		throw std::runtime_error(ss.str());
 	}
-
+	
 	// link
+	if(autolink) {
+		link();
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void jit::Module::link() {
+	std::vector<string> errorMsgs;
+	tcc_set_error_func(tcc.get(), &errorMsgs, addErrorMsg);
 	int size = tcc_relocate(tcc.get(), NULL);
 	if(size == -1) {
-		throw std::runtime_error("relocation failed");
+		std::ostringstream ss;
+		ss << "relocation failed : \n";
+		for(auto s : errorMsgs) {
+			ss << s << endl;
+		}
+		throw std::runtime_error(ss.str());
 	}
-
 	// if linking has succeded, allocate a memory buffer that will hold the code
 	mem.reset(new char[size]);
 	tcc_relocate(tcc.get(), mem.get());
+	linked = true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void* jit::Module::get_symbol(const std::string &symbol) const {
-	return tcc_get_symbol(tcc.get(), symbol.c_str());
+void* jit::Module::get_symbol(const std::string &symbol) {
+	if(!linked) {
+		link();
+	}
+	void *sym = tcc_get_symbol(tcc.get(), symbol.c_str());
+	if(sym == nullptr) {
+		throw std::runtime_error("symbol not found : '" + symbol +"'");
+	}
+	return sym;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-jit::Module::Module(const jit::Module& module) : tcc(module.tcc), mem(module.mem) {
+void jit::Module::add_symbol(const std::string& name, void *sym) {
+	if(!linked) {
+		link();
+	}
+	tcc_add_symbol(tcc.get(), name.c_str(), sym);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+jit::Module::Module(const jit::Module& module) : tcc(module.tcc), mem(module.mem), linked(module.linked) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
