@@ -1,0 +1,15 @@
+language: cpp
+dist: hirsute
+compiler: gcc
+
+addons:
+  apt:
+    packages:
+    - cmake
+    - libboost-regex-dev
+
+script:
+  - mkdir -p build && cd build
+  - cmake ..
+  - cmake --build .
+  - ./tests
