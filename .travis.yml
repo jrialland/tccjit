@@ -6,8 +6,6 @@ addons:
   apt:
     packages:
     - cmake
-    - libboost1.71-dev
-    - libboost-regex1.71-dev
 
 script:
   - mkdir -p build && cd build
