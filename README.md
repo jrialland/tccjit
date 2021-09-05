@@ -4,7 +4,7 @@ A small C++ wrapper around libtcc (❤️) (https://bellard.org/tcc/)
 Compiles code at runtime :
 
 ```c++
-#include "jit.hpp"
+#include "tccjit.hpp"
 
 int main() {
 
