@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/jrialland/tccjit.svg?branch=master)](https://travis-ci.com/jrialland/tccjit)
+[![Build Status](https://app.travis-ci.com/jrialland/tccjit.svg?branch=master)](https://app.travis-ci.com/github/jrialland/tccjit)
 
 A small C++ wrapper around libtcc (❤️) (https://bellard.org/tcc/)
 
