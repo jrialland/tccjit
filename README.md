@@ -20,7 +20,7 @@ int main() {
     auto func = module.fn<void(char*)>("func");
 
     // run it
-    func("World);
+    func("World");
 
     return 0;
 }
