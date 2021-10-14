@@ -5,7 +5,6 @@
 #include <libtcc.h>
 #include <string>
 #include <functional>
-#include <memory>
 
 namespace jit {
 
@@ -13,21 +12,21 @@ class Module {
 
 private:
 
-	std::shared_ptr<TCCState> tcc;
+	TCCState *tcc;
 
-	std::shared_ptr<char[]> mem;
+	char *mem;
+
+	size_t mem_size;
 
 	void *get_symbol(const std::string &symbol);
-
-	bool linked;
 	
 	virtual void link();
+
+	Module(const Module &) = delete;
 
 public:
 
 	Module(const std::string &code, bool autolink=false);
-
-	Module(const Module& module);
 
 	virtual ~Module();
 

@@ -4,8 +4,8 @@ project(tccjit)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-set(CMAKE_CXX_FLAGS_DEBUG_INIT "-Wall")
-set(CMAKE_CXX_FLAGS_RELEASE_INIT "-Wall")
+set(CMAKE_CXX_FLAGS_DEBUG_INIT "-Wall -Wfatal-errors -ggdb ")
+set(CMAKE_CXX_FLAGS_RELEASE_INIT "-Wall -Wfatal-errors -ffast-math -Ofast")
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 
 
