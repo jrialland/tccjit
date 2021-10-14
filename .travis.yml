@@ -6,10 +6,9 @@ addons:
   apt:
     packages:
       - cmake
-      - valgrind
 
 script:
   - mkdir -p build && cd build
   - cmake ..
   - cmake --build .
-  - valgrind -s ./tests
+  - ./tests
